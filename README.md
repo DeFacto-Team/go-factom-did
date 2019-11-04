@@ -1,5 +1,7 @@
 # Factom DID (Decentralized Identities) Golang Lib
 Golang lib for Factom DID (Decentralized Identities)
+Overall overview of this library design:
+https://docs.google.com/document/d/19JvrOyVKk6hHTtUuWoH1HS3vGQAu1MjbwsPgj33tIFo/edit
 
 ## Structs
 
