@@ -1,5 +1,5 @@
 # Factom DID (Decentralized Identities) Golang Lib
-The first W3C compatible Golang lib for Factom DID (Decentralized Identities)
+The first W3C compatible Golang lib for Factom DID (Decentralized Identities).<br />
 Overall overview of this library design:
 https://docs.google.com/document/d/19JvrOyVKk6hHTtUuWoH1HS3vGQAu1MjbwsPgj33tIFo/edit
 
