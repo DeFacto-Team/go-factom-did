@@ -497,8 +497,13 @@ func (did *DID) Update(updatedDID *DID, signingKeyAlias string) (*factom.Entry, 
 		return nil, fmt.Errorf("The update requires a key with priority <= %d, but the provided signing key priority = %d", reqPriority, signingKey.Priority)
 	}
 
+	entryContent, err := json.Marshal(update)
+	if err != nil {
+		return nil, err
+	}
+
 	signingKeyFullID := strings.Join([]string{did.ID, signingKey.Alias}, "#")
-	signature, err := signingKey.Sign([]byte(strings.Join([]string{EntryTypeUpdate, LatestEntrySchema, signingKeyFullID}, "")))
+	signature, err := signingKey.Sign([]byte(strings.Join([]string{EntryTypeUpdate, LatestEntrySchema, signingKeyFullID, string(entryContent)}, "")))
 
 	if err != nil {
 		return nil, err
@@ -511,11 +516,7 @@ func (did *DID) Update(updatedDID *DID, signingKeyAlias string) (*factom.Entry, 
 	fe.ExtIDs = append(fe.ExtIDs, []byte(signingKeyFullID))
 	fe.ExtIDs = append(fe.ExtIDs, signature)
 
-	fe.Content, err = json.Marshal(update)
-
-	if err != nil {
-		return nil, err
-	}
+	fe.Content, err = entryContent
 
 	if size := calculateEntrySize(fe); size > MaxEntrySize {
 		return nil, fmt.Errorf("You have exceeded the entry size limit")
