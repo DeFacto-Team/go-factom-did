@@ -516,7 +516,7 @@ func (did *DID) Update(updatedDID *DID, signingKeyAlias string) (*factom.Entry, 
 	fe.ExtIDs = append(fe.ExtIDs, []byte(signingKeyFullID))
 	fe.ExtIDs = append(fe.ExtIDs, signature)
 
-	fe.Content, err = entryContent
+	fe.Content = entryContent
 
 	if size := calculateEntrySize(fe); size > MaxEntrySize {
 		return nil, fmt.Errorf("You have exceeded the entry size limit")
