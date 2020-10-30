@@ -139,7 +139,7 @@ did.AddManagementKey(mgmtKey)
 
 // Generate Service
 // NewService(alias, serviceType, endpoint)
-service, err := factomdid.NewManagementKey("service-alias", "KYC", "https://kyc.example.com")
+service, err := factomdid.NewService("service-alias", "KYC", "https://kyc.example.com")
 if err != nil {
   // handle error
 }
