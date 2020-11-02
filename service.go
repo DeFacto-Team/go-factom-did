@@ -6,7 +6,7 @@ import (
 	"gopkg.in/go-playground/validator.v9"
 )
 
-// Service represents a service associated with a DID
+// Service represents a service associated with a DID.
 // A service is an end-point, which can be used to communicate with the DID or to carry out different tasks on behalf of the DID (such as signatures, e.g.)
 type Service struct {
 	Alias               string `json:"alias" form:"alias" query:"alias" validate:"required"`
@@ -74,14 +74,6 @@ func (service *Service) toRevokeIDSchema(DID string) (*RevokeIDSchema, error) {
 
 // SetPriorityRequirement sets PriorityRequirement for Service
 func (service *Service) SetPriorityRequirement(i int) *Service {
-
-	var j *int
-	j = new(int)
-
-	*j = i
-
-	service.PriorityRequirement = j
-
+	service.PriorityRequirement = &i
 	return service
-
 }

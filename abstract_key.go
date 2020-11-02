@@ -88,7 +88,7 @@ func (key *AbstractKey) Sign(message []byte) ([]byte, error) {
 
 }
 
-// Verify the signature of the given message
+// Verify the signature of the given message.
 // The message is hashed (SHA-256) before being verified
 func (key *AbstractKey) Verify(message []byte, signature []byte) (bool, error) {
 
@@ -185,14 +185,6 @@ func (key *AbstractKey) generateRandomKeys() *AbstractKey {
 
 // SetPriorityRequirement sets PriorityRequirement for AbstractKey
 func (key *AbstractKey) SetPriorityRequirement(i int) *AbstractKey {
-
-	var j *int
-	j = new(int)
-
-	*j = i
-
-	key.PriorityRequirement = j
-
+	key.PriorityRequirement = &i
 	return key
-
 }

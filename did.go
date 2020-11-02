@@ -62,8 +62,8 @@ const (
 	LatestDIDMethodSpec = DIDMethodSpecV020
 )
 
-// NewDID generates new blank DID document
-// DID.ExtIDs is a helper field that stores ExtIDs to be written on-chain to get expected ChainID for new DID chain
+// NewDID generates new blank DID document.
+// DID.ExtIDs is a helper field that stores ExtIDs to be written on-chain to get expected ChainID for new DID chain.
 // DID.ExtIDs is not a part of DID Document (JSON)
 func NewDID() *DID {
 
