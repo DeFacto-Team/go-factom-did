@@ -623,46 +623,29 @@ func (did *DID) Validate() error {
 	}
 
 	// check if DID and Management Keys aliases are unique
-	var aliases []string
+	unique := make(map[string]bool)
 
 	for i := range did.ManagementKeys {
-		aliases = append(aliases, did.ManagementKeys[i].Alias)
+		if unique[did.ManagementKeys[i].Alias] {
+			return fmt.Errorf("All keys aliases must be unique, 2 or more aliases of []*DIDKey and []*ManagementKey are the same")
+		}
+		unique[did.ManagementKeys[i].Alias] = true
 	}
 	for j := range did.DIDKeys {
-		aliases = append(aliases, did.DIDKeys[j].Alias)
-	}
-
-	keys := make(map[string]bool)
-	list := []string{}
-	for _, item := range aliases {
-		if _, value := keys[item]; !value {
-			keys[item] = true
-			list = append(list, item)
+		if unique[did.DIDKeys[j].Alias] {
+			return fmt.Errorf("All keys aliases must be unique, 2 or more aliases of []*DIDKey and []*ManagementKey are the same")
 		}
-	}
-
-	if len(list) != len(aliases) {
-		return fmt.Errorf("All keys aliases must be unique, 2 or more aliases of []*DIDKey and []*ManagementKey are the same")
+		unique[did.DIDKeys[j].Alias] = true
 	}
 
 	// check if services aliases are unique
-	var sAliases []string
+	services := make(map[string]bool)
 
 	for i := range did.Services {
-		sAliases = append(sAliases, did.Services[i].Alias)
-	}
-
-	services := make(map[string]bool)
-	slist := []string{}
-	for _, item := range sAliases {
-		if _, value := services[item]; !value {
-			services[item] = true
-			slist = append(slist, item)
+		if services[did.Services[i].Alias] {
+			return fmt.Errorf("All services aliases must be unique, 2 or more aliases of []*Services are the same")
 		}
-	}
-
-	if len(slist) != len(sAliases) {
-		return fmt.Errorf("All services aliases must be unique, 2 or more aliases of []*Services are the same")
+		services[did.Services[i].Alias] = true
 	}
 
 	return nil
