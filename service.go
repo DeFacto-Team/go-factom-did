@@ -2,8 +2,6 @@ package factomdid
 
 import (
 	"strings"
-
-	"gopkg.in/go-playground/validator.v9"
 )
 
 // Service represents a service associated with a DID.
@@ -25,7 +23,6 @@ func NewService(alias string, serviceType string, endpoint string) (*Service, er
 	service.Endpoint = endpoint
 
 	// validate
-	validate := validator.New()
 	err := validate.Struct(service)
 	if err != nil {
 		return nil, err
@@ -39,7 +36,6 @@ func NewService(alias string, serviceType string, endpoint string) (*Service, er
 func (service *Service) toSchema(DID string) (*ServiceSchema, error) {
 
 	// validate DID Key
-	validate := validator.New()
 	err := validate.Struct(service)
 	if err != nil {
 		return nil, err
@@ -59,7 +55,6 @@ func (service *Service) toSchema(DID string) (*ServiceSchema, error) {
 func (service *Service) toRevokeIDSchema(DID string) (*RevokeIDSchema, error) {
 
 	// validate Service
-	validate := validator.New()
 	err := validate.StructPartial(service, "Alias")
 	if err != nil {
 		return nil, err

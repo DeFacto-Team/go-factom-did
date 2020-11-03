@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/FactomProject/factom"
-	"gopkg.in/go-playground/validator.v9"
 )
 
 // DID describes DID document
@@ -123,7 +122,6 @@ func (did *DID) AddDIDKey(key *DIDKey) (*DID, error) {
 
 	key.Controller = did.ID
 
-	validate := validator.New()
 	// exclude PrivateKey from validation in case you have PublicKey only to verify signatures
 	err := validate.StructExcept(key, "PrivateKey")
 	if err != nil {
@@ -141,7 +139,6 @@ func (did *DID) AddManagementKey(key *ManagementKey) (*DID, error) {
 
 	key.Controller = did.ID
 
-	validate := validator.New()
 	// exclude PrivateKey from validation in case you have PublicKey only to verify signatures
 	err := validate.StructExcept(key, "PrivateKey")
 	if err != nil {
@@ -157,7 +154,6 @@ func (did *DID) AddManagementKey(key *ManagementKey) (*DID, error) {
 // AddService adds a new Service to the DID object
 func (did *DID) AddService(service *Service) (*DID, error) {
 
-	validate := validator.New()
 	err := validate.Struct(service)
 	if err != nil {
 		return nil, err
@@ -485,7 +481,6 @@ func (did *DID) Update(updatedDID *DID, signingKeyAlias string) (*factom.Entry, 
 		}
 	}
 
-	validate := validator.New()
 	err = validate.StructPartial(signingKey, "Alias", "PrivateKey")
 
 	if err != nil {
@@ -548,7 +543,6 @@ func (did *DID) Deactivate(signingKeyAlias string) (*factom.Entry, error) {
 		}
 	}
 
-	validate := validator.New()
 	err = validate.StructPartial(signingKey, "Alias", "PrivateKey")
 
 	if err != nil {
@@ -584,7 +578,6 @@ func (did *DID) Deactivate(signingKeyAlias string) (*factom.Entry, error) {
 func (did *DID) Validate() error {
 
 	var err error
-	validate := validator.New()
 
 	// validate DID document (DID)
 	err = validate.Struct(did)

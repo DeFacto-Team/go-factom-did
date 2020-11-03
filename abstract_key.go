@@ -10,7 +10,6 @@ import (
 	"fmt"
 
 	"github.com/frankbraun/dcrd/dcrec/secp256k1"
-	"gopkg.in/go-playground/validator.v9"
 )
 
 // AbstractKey represents the common fields and functionality in a ManagementKey and a DIDKey.
@@ -36,7 +35,6 @@ const (
 // The message is hashed (SHA-256) before being signed
 func (key *AbstractKey) Sign(message []byte) ([]byte, error) {
 
-	validate := validator.New()
 	err := validate.StructPartial(key, "PrivateKey", "KeyType")
 	if err != nil {
 		return nil, err
@@ -92,7 +90,6 @@ func (key *AbstractKey) Sign(message []byte) ([]byte, error) {
 // The message is hashed (SHA-256) before being verified
 func (key *AbstractKey) Verify(message []byte, signature []byte) (bool, error) {
 
-	validate := validator.New()
 	err := validate.StructPartial(key, "PublicKey", "KeyType")
 	if err != nil {
 		return false, err

@@ -7,13 +7,16 @@ import (
 	"time"
 
 	"github.com/FactomProject/factom"
+	"gopkg.in/go-playground/validator.v9"
 )
 
 var rng *rand.Rand
 var rngMtx sync.Mutex
+var validate *validator.Validate
 
 func init() {
 	rng = rand.New(rand.NewSource(time.Now().UnixNano()))
+	validate = validator.New()
 }
 
 // generateNonce() generates random 32 bytes nonce

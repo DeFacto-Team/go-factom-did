@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"gopkg.in/go-playground/validator.v9"
 )
 
 func TestNewDIDKey(t *testing.T) {
@@ -39,7 +38,6 @@ func TestNewDIDKey(t *testing.T) {
 	assert.Nil(t, k6)
 
 	// purposes tests
-	validate := validator.New()
 	k7, _ := NewDIDKey("test", KeyTypeECDSA)
 
 	// 0. no purposes
