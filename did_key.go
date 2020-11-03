@@ -37,7 +37,6 @@ func NewDIDKey(alias string, keyType string) (*DIDKey, error) {
 	key.KeyType = keyType
 
 	// validate Alias and KeyType
-	validate := validator.New()
 	err := validate.StructPartial(key.AbstractKey, "Alias", "KeyType")
 	if err != nil {
 		return nil, err
@@ -55,7 +54,6 @@ func (didkey *DIDKey) AddPurpose(purpose string) (*DIDKey, error) {
 	p := DIDKeyPurpose{Purpose: purpose}
 
 	// validate Purpose
-	validate := validator.New()
 	err := validate.Struct(p)
 	if err != nil {
 		return nil, err
@@ -71,7 +69,6 @@ func (didkey *DIDKey) AddPurpose(purpose string) (*DIDKey, error) {
 func (didkey *DIDKey) toSchema(DID string) (*DIDKeySchema, error) {
 
 	// validate DIDKey
-	validate := validator.New()
 	err := validate.Struct(didkey)
 	if err != nil {
 		return nil, err

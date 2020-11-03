@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/FactomProject/btcutil/base58"
-	"gopkg.in/go-playground/validator.v9"
 )
 
 // ManagementKey is a key used to sign updates for an existing DID
@@ -23,7 +22,6 @@ func NewManagementKey(alias string, keyType string, priority int) (*ManagementKe
 	key.Priority = priority
 
 	// validate Alias and KeyType
-	validate := validator.New()
 	err := validate.StructPartial(key.AbstractKey, "Alias", "KeyType")
 	if err != nil {
 		return nil, err
@@ -44,7 +42,6 @@ func NewManagementKey(alias string, keyType string, priority int) (*ManagementKe
 func (mgmtkey *ManagementKey) toSchema(DID string) (*ManagementKeySchema, error) {
 
 	// validate ManagementKey
-	validate := validator.New()
 	err := validate.Struct(mgmtkey)
 	if err != nil {
 		return nil, err
@@ -71,7 +68,6 @@ func (mgmtkey *ManagementKey) toSchema(DID string) (*ManagementKeySchema, error)
 func (mgmtkey *ManagementKey) toRevokeIDSchema(DID string) (*RevokeIDSchema, error) {
 
 	// validate Management Key
-	validate := validator.New()
 	err := validate.StructPartial(mgmtkey, "Alias")
 	if err != nil {
 		return nil, err

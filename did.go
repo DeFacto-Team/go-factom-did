@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/FactomProject/factom"
-	"gopkg.in/go-playground/validator.v9"
 )
 
 // DID describes DID document
@@ -62,8 +61,8 @@ const (
 	LatestDIDMethodSpec = DIDMethodSpecV020
 )
 
-// NewDID generates new blank DID document
-// DID.ExtIDs is a helper field that stores ExtIDs to be written on-chain to get expected ChainID for new DID chain
+// NewDID generates new blank DID document.
+// DID.ExtIDs is a helper field that stores ExtIDs to be written on-chain to get expected ChainID for new DID chain.
 // DID.ExtIDs is not a part of DID Document (JSON)
 func NewDID() *DID {
 
@@ -123,7 +122,6 @@ func (did *DID) AddDIDKey(key *DIDKey) (*DID, error) {
 
 	key.Controller = did.ID
 
-	validate := validator.New()
 	// exclude PrivateKey from validation in case you have PublicKey only to verify signatures
 	err := validate.StructExcept(key, "PrivateKey")
 	if err != nil {
@@ -131,6 +129,12 @@ func (did *DID) AddDIDKey(key *DIDKey) (*DID, error) {
 	}
 
 	did.DIDKeys = append(did.DIDKeys, key)
+
+	// prevent adding duplicate alias
+	err = did.checkUnique()
+	if err != nil {
+		return nil, err
+	}
 
 	return did, nil
 
@@ -141,7 +145,6 @@ func (did *DID) AddManagementKey(key *ManagementKey) (*DID, error) {
 
 	key.Controller = did.ID
 
-	validate := validator.New()
 	// exclude PrivateKey from validation in case you have PublicKey only to verify signatures
 	err := validate.StructExcept(key, "PrivateKey")
 	if err != nil {
@@ -150,6 +153,12 @@ func (did *DID) AddManagementKey(key *ManagementKey) (*DID, error) {
 
 	did.ManagementKeys = append(did.ManagementKeys, key)
 
+	// prevent adding duplicate alias
+	err = did.checkUnique()
+	if err != nil {
+		return nil, err
+	}
+
 	return did, nil
 
 }
@@ -157,13 +166,18 @@ func (did *DID) AddManagementKey(key *ManagementKey) (*DID, error) {
 // AddService adds a new Service to the DID object
 func (did *DID) AddService(service *Service) (*DID, error) {
 
-	validate := validator.New()
 	err := validate.Struct(service)
 	if err != nil {
 		return nil, err
 	}
 
 	did.Services = append(did.Services, service)
+
+	// prevent adding duplicate alias
+	err = did.checkUnique()
+	if err != nil {
+		return nil, err
+	}
 
 	return did, nil
 
@@ -485,7 +499,6 @@ func (did *DID) Update(updatedDID *DID, signingKeyAlias string) (*factom.Entry, 
 		}
 	}
 
-	validate := validator.New()
 	err = validate.StructPartial(signingKey, "Alias", "PrivateKey")
 
 	if err != nil {
@@ -548,7 +561,6 @@ func (did *DID) Deactivate(signingKeyAlias string) (*factom.Entry, error) {
 		}
 	}
 
-	validate := validator.New()
 	err = validate.StructPartial(signingKey, "Alias", "PrivateKey")
 
 	if err != nil {
@@ -584,7 +596,6 @@ func (did *DID) Deactivate(signingKeyAlias string) (*factom.Entry, error) {
 func (did *DID) Validate() error {
 
 	var err error
-	validate := validator.New()
 
 	// validate DID document (DID)
 	err = validate.Struct(did)
@@ -622,47 +633,43 @@ func (did *DID) Validate() error {
 		}
 	}
 
+	// check if DID and Management Keys aliases + Services aliases are unique
+	err = did.checkUnique()
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}
+
+// helper function that checks DID keys and services for alias uniqueness
+func (did *DID) checkUnique() error {
+
 	// check if DID and Management Keys aliases are unique
-	var aliases []string
+	keys := make(map[string]bool)
 
 	for i := range did.ManagementKeys {
-		aliases = append(aliases, did.ManagementKeys[i].Alias)
+		if keys[did.ManagementKeys[i].Alias] {
+			return fmt.Errorf("All keys aliases must be unique, 2 or more aliases of []*DIDKey and []*ManagementKey are the same")
+		}
+		keys[did.ManagementKeys[i].Alias] = true
 	}
 	for j := range did.DIDKeys {
-		aliases = append(aliases, did.DIDKeys[j].Alias)
-	}
-
-	keys := make(map[string]bool)
-	list := []string{}
-	for _, item := range aliases {
-		if _, value := keys[item]; !value {
-			keys[item] = true
-			list = append(list, item)
+		if keys[did.DIDKeys[j].Alias] {
+			return fmt.Errorf("All keys aliases must be unique, 2 or more aliases of []*DIDKey and []*ManagementKey are the same")
 		}
-	}
-
-	if len(list) != len(aliases) {
-		return fmt.Errorf("All keys aliases must be unique, 2 or more aliases of []*DIDKey and []*ManagementKey are the same")
+		keys[did.DIDKeys[j].Alias] = true
 	}
 
 	// check if services aliases are unique
-	var sAliases []string
+	services := make(map[string]bool)
 
 	for i := range did.Services {
-		sAliases = append(sAliases, did.Services[i].Alias)
-	}
-
-	services := make(map[string]bool)
-	slist := []string{}
-	for _, item := range sAliases {
-		if _, value := services[item]; !value {
-			services[item] = true
-			slist = append(slist, item)
+		if services[did.Services[i].Alias] {
+			return fmt.Errorf("All services aliases must be unique, 2 or more aliases of []*Services are the same")
 		}
-	}
-
-	if len(slist) != len(sAliases) {
-		return fmt.Errorf("All services aliases must be unique, 2 or more aliases of []*Services are the same")
+		services[did.Services[i].Alias] = true
 	}
 
 	return nil

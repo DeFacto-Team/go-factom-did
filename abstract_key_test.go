@@ -4,7 +4,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"gopkg.in/go-playground/validator.v9"
 )
 
 // TestAbstractKeys covers key generation, sign and verify of all type of keys
@@ -13,7 +12,6 @@ func TestAbstractKeys(t *testing.T) {
 	var err error
 	var signature []byte
 	var verify bool
-	validate := validator.New()
 
 	// test ecdsa key
 	ecdsa := &AbstractKey{}
