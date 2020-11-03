@@ -130,6 +130,12 @@ func (did *DID) AddDIDKey(key *DIDKey) (*DID, error) {
 
 	did.DIDKeys = append(did.DIDKeys, key)
 
+	// prevent adding duplicate alias
+	err = did.checkUnique()
+	if err != nil {
+		return nil, err
+	}
+
 	return did, nil
 
 }
@@ -147,6 +153,12 @@ func (did *DID) AddManagementKey(key *ManagementKey) (*DID, error) {
 
 	did.ManagementKeys = append(did.ManagementKeys, key)
 
+	// prevent adding duplicate alias
+	err = did.checkUnique()
+	if err != nil {
+		return nil, err
+	}
+
 	return did, nil
 
 }
@@ -160,6 +172,12 @@ func (did *DID) AddService(service *Service) (*DID, error) {
 	}
 
 	did.Services = append(did.Services, service)
+
+	// prevent adding duplicate alias
+	err = did.checkUnique()
+	if err != nil {
+		return nil, err
+	}
 
 	return did, nil
 
@@ -615,20 +633,33 @@ func (did *DID) Validate() error {
 		}
 	}
 
+	// check if DID and Management Keys aliases + Services aliases are unique
+	err = did.checkUnique()
+	if err != nil {
+		return err
+	}
+
+	return nil
+
+}
+
+// helper function that checks DID keys and services for alias uniqueness
+func (did *DID) checkUnique() error {
+
 	// check if DID and Management Keys aliases are unique
-	unique := make(map[string]bool)
+	keys := make(map[string]bool)
 
 	for i := range did.ManagementKeys {
-		if unique[did.ManagementKeys[i].Alias] {
+		if keys[did.ManagementKeys[i].Alias] {
 			return fmt.Errorf("All keys aliases must be unique, 2 or more aliases of []*DIDKey and []*ManagementKey are the same")
 		}
-		unique[did.ManagementKeys[i].Alias] = true
+		keys[did.ManagementKeys[i].Alias] = true
 	}
 	for j := range did.DIDKeys {
-		if unique[did.DIDKeys[j].Alias] {
+		if keys[did.DIDKeys[j].Alias] {
 			return fmt.Errorf("All keys aliases must be unique, 2 or more aliases of []*DIDKey and []*ManagementKey are the same")
 		}
-		unique[did.DIDKeys[j].Alias] = true
+		keys[did.DIDKeys[j].Alias] = true
 	}
 
 	// check if services aliases are unique

@@ -105,22 +105,35 @@ func TestAddDIDKey(t *testing.T) {
 	assert.Equal(t, 1, len(did.DIDKeys))
 	assert.NoError(t, err)
 
+	// try to add key with duplicate alias
+	duplicateKey1, _ := NewDIDKey("test", KeyTypeECDSA)
+	duplicateKey1.AddPurpose(KeyPurposePublic)
+	did, err = did.AddDIDKey(duplicateKey1)
+	assert.Nil(t, did)
+	assert.Error(t, err)
+
 }
 
 func TestAddManagementKey(t *testing.T) {
 
+	// add invalid Management key
 	did := NewDID()
+	invalidMKey := &ManagementKey{}
+	invalidMKey.Alias = "test"
+	did, err := did.AddManagementKey(invalidMKey)
+	assert.Nil(t, did)
+	assert.Error(t, err)
 
 	// add valid Management Key
+	did = NewDID()
 	validMKey, _ := NewManagementKey("test", KeyTypeRSA, 0)
-	did, err := did.AddManagementKey(validMKey)
+	did, err = did.AddManagementKey(validMKey)
 	assert.Equal(t, 1, len(did.ManagementKeys))
 	assert.NoError(t, err)
 
-	// add invalid Management key
-	invalidMKey := &ManagementKey{}
-	invalidMKey.Alias = "test"
-	did, err = did.AddManagementKey(invalidMKey)
+	// try to add key with duplicate alias
+	duplicateKey1, _ := NewManagementKey("test", KeyTypeECDSA, 0)
+	did, err = did.AddManagementKey(duplicateKey1)
 	assert.Nil(t, did)
 	assert.Error(t, err)
 
@@ -129,18 +142,25 @@ func TestAddManagementKey(t *testing.T) {
 func TestAddService(t *testing.T) {
 
 	var err error
+
+	// add invalid Service
 	did := NewDID()
+	invalidService := &Service{}
+	invalidService.Alias = "test"
+	did, err = did.AddService(invalidService)
+	assert.Nil(t, did)
+	assert.Error(t, err)
 
 	// add valid Service
+	did = NewDID()
 	validService, _ := NewService("test", "Test", "https://endpoint.com")
 	did, err = did.AddService(validService)
 	assert.Equal(t, 1, len(did.Services))
 	assert.NoError(t, err)
 
-	// add invalid Service
-	invalidService := &Service{}
-	invalidService.Alias = "test"
-	did, err = did.AddService(invalidService)
+	// try to add service with duplicate alias
+	duplicateService1, _ := NewService("test", "Test2", "https://another.endpoint.com")
+	did, err = did.AddService(duplicateService1)
 	assert.Nil(t, did)
 	assert.Error(t, err)
 
