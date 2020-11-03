@@ -3,17 +3,25 @@ package factomdid
 import (
 	"fmt"
 	"math/rand"
+	"sync"
 	"time"
 
 	"github.com/FactomProject/factom"
 )
 
+var rng *rand.Rand
+var rngMtx sync.Mutex
+
+func init() {
+	rng = rand.New(rand.NewSource(time.Now().UnixNano()))
+}
+
 // generateNonce() generates random 32 bytes nonce
 func generateNonce() []byte {
-	rand.Seed(time.Now().UnixNano())
-
 	nonce := make([]byte, 64)
-	rand.Read(nonce)
+	rngMtx.Lock()
+	rng.Read(nonce)
+	rngMtx.Unlock()
 
 	return nonce
 }
