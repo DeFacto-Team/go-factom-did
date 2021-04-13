@@ -1,6 +1,7 @@
 package factomdid
 
 import (
+	"bytes"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -237,6 +238,12 @@ func TestDeactivate(t *testing.T) {
 	assert.NotNil(t, fe)
 	assert.NoError(t, err)
 
+	// check signature
+	e := bytes.Join(append(fe.ExtIDs[:3], fe.ExtIDs[4:]...), nil)
+	m := bytes.Join([][]byte{e, fe.Content}, nil)
+	v, err := did.ManagementKeys[0].Verify(m, fe.ExtIDs[3])
+	assert.True(t, v)
+	assert.NoError(t, err)
 }
 
 func TestUpdate(t *testing.T) {
@@ -271,6 +278,12 @@ func TestUpdate(t *testing.T) {
 	assert.NotEmpty(t, fe)
 	assert.NoError(t, err)
 
+	// check signature
+	e := bytes.Join(append(fe.ExtIDs[:3], fe.ExtIDs[4:]...), nil)
+	m := bytes.Join([][]byte{e, fe.Content}, nil)
+	v, err := did.ManagementKeys[0].Verify(m, fe.ExtIDs[3])
+	assert.True(t, v)
+	assert.NoError(t, err)
 }
 
 func TestValidate(t *testing.T) {
