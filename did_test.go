@@ -1,6 +1,7 @@
 package factomdid
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -237,6 +238,11 @@ func TestDeactivate(t *testing.T) {
 	assert.NotNil(t, fe)
 	assert.NoError(t, err)
 
+	// check signature
+	signingKeyFullID := strings.Join([]string{did.ID, "default-mgmt-key"}, "#")
+	v, err := did.ManagementKeys[0].Verify([]byte(strings.Join([]string{EntryTypeDeactivation, LatestEntrySchema, signingKeyFullID}, "")), fe.ExtIDs[3])
+	assert.True(t, v)
+	assert.NoError(t, err)
 }
 
 func TestUpdate(t *testing.T) {
@@ -271,6 +277,11 @@ func TestUpdate(t *testing.T) {
 	assert.NotEmpty(t, fe)
 	assert.NoError(t, err)
 
+	// check signature
+	signingKeyFullID := strings.Join([]string{did.ID, "m1"}, "#")
+	v, err := did.ManagementKeys[0].Verify([]byte(strings.Join([]string{EntryTypeUpdate, LatestEntrySchema, signingKeyFullID, string(fe.Content)}, "")), fe.ExtIDs[3])
+	assert.True(t, v)
+	assert.NoError(t, err)
 }
 
 func TestValidate(t *testing.T) {
