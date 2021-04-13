@@ -1,7 +1,7 @@
 package factomdid
 
 import (
-	"strings"
+	"bytes"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -239,8 +239,9 @@ func TestDeactivate(t *testing.T) {
 	assert.NoError(t, err)
 
 	// check signature
-	signingKeyFullID := strings.Join([]string{did.ID, "default-mgmt-key"}, "#")
-	v, err := did.ManagementKeys[0].Verify([]byte(strings.Join([]string{EntryTypeDeactivation, LatestEntrySchema, signingKeyFullID}, "")), fe.ExtIDs[3])
+	e := bytes.Join(append(fe.ExtIDs[:3], fe.ExtIDs[4:]...), nil)
+	m := bytes.Join([][]byte{e, fe.Content}, nil)
+	v, err := did.ManagementKeys[0].Verify(m, fe.ExtIDs[3])
 	assert.True(t, v)
 	assert.NoError(t, err)
 }
@@ -278,8 +279,9 @@ func TestUpdate(t *testing.T) {
 	assert.NoError(t, err)
 
 	// check signature
-	signingKeyFullID := strings.Join([]string{did.ID, "m1"}, "#")
-	v, err := did.ManagementKeys[0].Verify([]byte(strings.Join([]string{EntryTypeUpdate, LatestEntrySchema, signingKeyFullID, string(fe.Content)}, "")), fe.ExtIDs[3])
+	e := bytes.Join(append(fe.ExtIDs[:3], fe.ExtIDs[4:]...), nil)
+	m := bytes.Join([][]byte{e, fe.Content}, nil)
+	v, err := did.ManagementKeys[0].Verify(m, fe.ExtIDs[3])
 	assert.True(t, v)
 	assert.NoError(t, err)
 }
